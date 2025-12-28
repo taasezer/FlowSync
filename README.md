@@ -1,11 +1,14 @@
+**YAZ213**
 
-  # Prototip ve Test Planı
+````bash
+git clone https://github.com/taasezer/FlowSync.git
+````
 
-  This is a code bundle for Prototip ve Test Planı. The original project is available at https://www.figma.com/design/zQA0SllMT9UiTkYiJrsOjd/Prototip-ve-Test-Plan%C4%B1.
+ ````bash
+npm i
+````
+````bash
+npm run dev
+````
 
-  ## Running the code
-
-  Run `npm i` to install the dependencies.
-
-  Run `npm run dev` to start the development server.
-  
+**https://make-spiral-81101632.figma.site/**
