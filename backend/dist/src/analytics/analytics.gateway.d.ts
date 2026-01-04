@@ -21,6 +21,8 @@ export declare class AnalyticsGateway implements OnGatewayConnection, OnGatewayD
         user: {
             id: string;
             email: string;
+            password: string;
+            role: string;
             name: string | null;
             createdAt: Date;
             updatedAt: Date;

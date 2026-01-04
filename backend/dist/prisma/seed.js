@@ -7,8 +7,10 @@ async function main() {
         where: { email: 'test@flowsync.app' },
         update: {},
         create: {
-            email: 'test@flowsync.app',
-            name: 'Test Engineer',
+            email: 'seed-test@flowsync.app',
+            name: 'Seed User',
+            password: '$2b$10$EpIxQi0q0q/5r6q.5r6q.5r6q.5r6q.5r6q.5r6q.5r6q.5r6q',
+            role: 'USER',
         },
     });
     console.log({ user });

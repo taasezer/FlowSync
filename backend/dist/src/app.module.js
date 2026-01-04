@@ -14,12 +14,14 @@ const analytics_module_1 = require("./analytics/analytics.module");
 const prisma_module_1 = require("./prisma/prisma.module");
 const focus_module_1 = require("./focus/focus.module");
 const settings_module_1 = require("./settings/settings.module");
+const auth_module_1 = require("./auth/auth.module");
+const admin_module_1 = require("./admin/admin.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [analytics_module_1.AnalyticsModule, prisma_module_1.PrismaModule, focus_module_1.FocusModule, settings_module_1.SettingsModule],
+        imports: [analytics_module_1.AnalyticsModule, prisma_module_1.PrismaModule, focus_module_1.FocusModule, settings_module_1.SettingsModule, auth_module_1.AuthModule, admin_module_1.AdminModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
