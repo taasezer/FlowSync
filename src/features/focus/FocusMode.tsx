@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useCreateFocusSession } from './api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
@@ -19,11 +20,18 @@ export function FocusMode({ onFocusChange }: FocusModeProps) {
     intensity: [70]
   });
 
+  const { mutate: createSession } = useCreateFocusSession();
+
   const handleFocusToggle = (enabled: boolean) => {
     setFocusEnabled(enabled);
     onFocusChange(enabled);
 
     if (enabled) {
+      createSession({
+        mode: 'default',
+        duration: 1500 // default 25m for now
+      });
+
       toast.success('Odak Modu Aktif', {
         description: 'Dikkat dağıtıcılar engellendi. İyi çalışmalar!',
         duration: 3000

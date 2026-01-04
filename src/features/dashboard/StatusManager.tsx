@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useUpdateSettings } from '../settings/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
@@ -19,9 +20,16 @@ export function StatusManager({ isFlowActive }: StatusManagerProps) {
     teams: true
   });
 
+  const { mutate: updateSettings } = useUpdateSettings();
+
   const handleStatusToggle = () => {
-    setAutoStatus(!autoStatus);
-    if (!autoStatus) {
+    const newState = !autoStatus;
+    setAutoStatus(newState);
+
+    // Persist to backend
+    updateSettings({ notifications: newState });
+
+    if (newState) {
       toast.success('Otomatik durum bildirimi aktif', {
         description: 'Derin akış durumunda otomatik olarak "Meşgul" statüsüne geçeceksiniz'
       });
@@ -29,6 +37,16 @@ export function StatusManager({ isFlowActive }: StatusManagerProps) {
       toast.info('Otomatik durum bildirimi kapatıldı');
     }
   };
+
+  const handleNotificationChange = (key: keyof typeof notifications, value: boolean) => {
+    const newNotifications = { ...notifications, [key]: value };
+    setNotifications(newNotifications);
+    // In a real app we would map these specific platforms to the backend JSON structure
+    // For now we just update the generic 'notifications' flag or template
+    updateSettings({ focusTemplates: newNotifications });
+  };
+
+  // ... (rest of the component)
 
   const getCurrentStatus = () => {
     if (!autoStatus) return { label: 'Manuel', color: 'bg-slate-500' };
@@ -85,9 +103,7 @@ export function StatusManager({ isFlowActive }: StatusManagerProps) {
             </div>
             <Switch
               checked={notifications.slack}
-              onCheckedChange={(checked) =>
-                setNotifications({ ...notifications, slack: checked })
-              }
+              onCheckedChange={(checked) => handleNotificationChange('slack', checked)}
             />
           </div>
 
@@ -98,9 +114,7 @@ export function StatusManager({ isFlowActive }: StatusManagerProps) {
             </div>
             <Switch
               checked={notifications.teams}
-              onCheckedChange={(checked) =>
-                setNotifications({ ...notifications, teams: checked })
-              }
+              onCheckedChange={(checked) => handleNotificationChange('teams', checked)}
             />
           </div>
 
@@ -111,9 +125,7 @@ export function StatusManager({ isFlowActive }: StatusManagerProps) {
             </div>
             <Switch
               checked={notifications.email}
-              onCheckedChange={(checked) =>
-                setNotifications({ ...notifications, email: checked })
-              }
+              onCheckedChange={(checked) => handleNotificationChange('email', checked)}
             />
           </div>
         </div>
