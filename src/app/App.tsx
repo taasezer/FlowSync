@@ -11,67 +11,12 @@ import { Code2, Settings, BarChart3, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 
 function App() {
-  // Simulated activity level (0-100)
-  const [activityLevel, setActivityLevel] = useState(65);
-  const [flowDuration, setFlowDuration] = useState(45);
+
+  // Placeholder for real data
+  const [activityLevel, setActivityLevel] = useState(0);
+  const [flowDuration, setFlowDuration] = useState(0);
   const [focusMode, setFocusMode] = useState(false);
 
-  // Generate mock activity data
-  const generateActivityData = () => {
-    const now = new Date();
-    const data = [];
-    for (let i = 11; i >= 0; i--) {
-      const time = new Date(now.getTime() - i * 5 * 60000);
-      data.push({
-        time: time.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
-        activity: Math.floor(Math.random() * 40) + 40 + (focusMode ? 20 : 0)
-      });
-    }
-    return data;
-  };
-
-  const [activityData, setActivityData] = useState(generateActivityData());
-
-  // Simulate real-time activity changes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Random activity fluctuation
-      setActivityLevel(prev => {
-        const change = Math.random() * 20 - 10;
-        const newValue = Math.max(20, Math.min(100, prev + change));
-        return Math.floor(newValue);
-      });
-
-      // Update activity data
-      setActivityData(prev => {
-        const newData = [...prev.slice(1)];
-        const now = new Date();
-        newData.push({
-          time: now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
-          activity: activityLevel
-        });
-        return newData;
-      });
-
-      // Increment flow duration if activity is high
-      if (activityLevel > 50) {
-        setFlowDuration(prev => prev + 1);
-      }
-    }, 5000); // Update every 5 seconds for demo purposes
-
-    return () => clearInterval(interval);
-  }, [activityLevel]);
-
-  // Mock data for statistics
-  const weeklyData = [
-    { day: 'Pzt', minutes: 245 },
-    { day: 'Sal', minutes: 310 },
-    { day: 'Çar', minutes: 180 },
-    { day: 'Per', minutes: 265 },
-    { day: 'Cum', minutes: 290 },
-    { day: 'Cmt', minutes: 120 },
-    { day: 'Paz', minutes: 90 }
-  ];
 
   const flowDistribution = [
     { name: 'Derin Akış', value: 720 },
@@ -80,10 +25,22 @@ function App() {
     { name: 'Mola', value: 120 }
   ];
 
+  const weeklyData = [
+    { day: 'Mon', minutes: 0 },
+    { day: 'Tue', minutes: 0 },
+    { day: 'Wed', minutes: 0 },
+    { day: 'Thu', minutes: 0 },
+    { day: 'Fri', minutes: 0 },
+    { day: 'Sat', minutes: 0 },
+    { day: 'Sun', minutes: 0 }
+  ];
+
+  const activityData = [{ time: '00:00', activity: 0 }];
+
   return (
     <div className="min-h-screen bg-background">
       <Toaster />
-      
+
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -98,7 +55,7 @@ function App() {
               </div>
             </div>
             <div className="text-sm text-muted-foreground">
-              Grup 13 • YAZ 213 İBE
+              v2.0.0 Enterprise
             </div>
           </div>
         </div>
@@ -132,7 +89,7 @@ function App() {
             <div className="text-center space-y-2 py-6">
               <h2 className="text-3xl font-bold">Akış Durumu Takibi</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Kod yazma aktivitenizi gerçek zamanlı izleyin, akış durumunuzu optimize edin 
+                Kod yazma aktivitenizi gerçek zamanlı izleyin, akış durumunuzu optimize edin
                 ve verimliğinizi artırın.
               </p>
             </div>
@@ -142,7 +99,7 @@ function App() {
               <StatusManager isFlowActive={activityLevel > 70} />
             </div>
 
-            <ActivityTracker 
+            <ActivityTracker
               activityData={activityData}
               keystrokes={12847}
               mouseClicks={3421}
@@ -184,7 +141,7 @@ function App() {
               </p>
             </div>
 
-            <Statistics 
+            <Statistics
               weeklyData={weeklyData}
               flowDistribution={flowDistribution}
             />
@@ -222,8 +179,8 @@ function App() {
       {/* Footer */}
       <footer className="border-t mt-12">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>FlowSync - Yazılım Geliştiriciler için Akış Yönetimi Çözümü</p>
-          <p className="mt-1">YAZ 213 İnsan Bilgisayar Etkileşimi • İş Paketi 2 • Grup 13</p>
+          <p>FlowSync - Professional Flow Management Solution for Developers</p>
+          <p className="mt-1">Copyright © 2024 FlowSync. All rights reserved.</p>
         </div>
       </footer>
     </div>
