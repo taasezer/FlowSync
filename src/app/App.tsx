@@ -1,22 +1,28 @@
 import { useState, useEffect } from 'react';
-import { Toaster } from './components/ui/sonner';
-import { FlowStatusIndicator } from './components/FlowStatusIndicator';
-import { ActivityTracker } from './components/ActivityTracker';
-import { StatusManager } from './components/StatusManager';
-import { FocusMode } from './components/FocusMode';
-import { BreakReminders } from './components/BreakReminders';
-import { Statistics } from './components/Statistics';
-import { UserInsights } from './components/UserInsights';
+import { Toaster } from '../components/ui/sonner';
+import { FlowStatusIndicator } from '../features/dashboard/FlowStatusIndicator';
+import { ActivityTracker } from '../features/dashboard/ActivityTracker';
+import { StatusManager } from '../features/dashboard/StatusManager';
+import { FocusMode } from '../features/focus/FocusMode';
+import { BreakReminders } from '../features/focus/BreakReminders';
+import { Statistics } from '../features/statistics/Statistics';
+import { UserInsights } from '../features/insights/UserInsights';
 import { Code2, Settings, BarChart3, Users } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { useActivityData, useWeeklyStats } from '../features/dashboard/api';
 
 function App() {
 
   // Placeholder for real data
-  const [activityLevel, setActivityLevel] = useState(0);
+  const [activityLevel, setActivityLevel] = useState(65);
   const [flowDuration, setFlowDuration] = useState(0);
   const [focusMode, setFocusMode] = useState(false);
 
+  // Fetch data using React Query
+  const { data: activityData = [] } = useActivityData();
+  const { data: weeklyData = [] } = useWeeklyStats();
+
+  // Temporary: sync activityLevel with mocked backend data if needed
 
   const flowDistribution = [
     { name: 'Derin Akış', value: 720 },
@@ -24,19 +30,6 @@ function App() {
     { name: 'Dağınık', value: 180 },
     { name: 'Mola', value: 120 }
   ];
-
-  const weeklyData = [
-    { day: 'Mon', minutes: 0 },
-    { day: 'Tue', minutes: 0 },
-    { day: 'Wed', minutes: 0 },
-    { day: 'Thu', minutes: 0 },
-    { day: 'Fri', minutes: 0 },
-    { day: 'Sat', minutes: 0 },
-    { day: 'Sun', minutes: 0 }
-  ];
-
-  const activityData = [{ time: '00:00', activity: 0 }];
-
   return (
     <div className="min-h-screen bg-background">
       <Toaster />
