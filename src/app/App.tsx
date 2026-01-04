@@ -10,7 +10,7 @@ import { UserInsights } from '../features/insights/UserInsights';
 import { Code2, Settings, BarChart3, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { useActivityData, useWeeklyStats } from '../features/dashboard/api';
-import { connectSocket, disconnectSocket } from '../lib/socket';
+import { connectSocket, disconnectSocket, socket } from '../lib/socket';
 
 function App() {
 
@@ -21,7 +21,16 @@ function App() {
 
   useEffect(() => {
     connectSocket();
-    return () => disconnectSocket();
+
+    // Listen for activity updates
+    socket.on('activity_level', (level: number) => {
+      setActivityLevel(level);
+    });
+
+    return () => {
+      socket.off('activity_level');
+      disconnectSocket();
+    };
   }, []);
 
   // Fetch data using React Query
