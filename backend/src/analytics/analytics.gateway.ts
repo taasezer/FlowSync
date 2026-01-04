@@ -54,7 +54,7 @@ export class AnalyticsGateway implements OnGatewayConnection, OnGatewayDisconnec
   }
 
   @SubscribeMessage('removeAnalytics')
-  remove(@MessageBody() id: number) {
+  remove(@MessageBody() id: string) {
     return this.analyticsService.remove(id);
   }
 }

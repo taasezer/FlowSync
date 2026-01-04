@@ -24,11 +24,11 @@ export class AnalyticsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAnalyticsDto: UpdateAnalyticsDto) {
-    return this.analyticsService.update(+id, updateAnalyticsDto);
+    return this.analyticsService.update(id, updateAnalyticsDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.analyticsService.remove(+id);
+    return this.analyticsService.remove(id);
   }
 }

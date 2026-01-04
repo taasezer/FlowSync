@@ -1,8 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { Badge } from './ui/badge';
+import { Badge } from '../../components/ui/badge';
 import { User, Quote, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback } from '../../components/ui/avatar';
 
 interface Persona {
   name: string;

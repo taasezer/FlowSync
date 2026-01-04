@@ -53,11 +53,11 @@ export class AnalyticsService {
     });
   }
 
-  update(id: number, updateAnalyticsDto: UpdateAnalyticsDto) {
+  update(id: string, updateAnalyticsDto: UpdateAnalyticsDto) {
     return `This action updates a #${id} analytics`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} analytics`;
   }
 }
