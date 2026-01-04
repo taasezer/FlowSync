@@ -32,7 +32,7 @@ cd backend
 npm install
 npm run start:dev
 
-The backend will run on http://localhost:3000.
+The backend will run on http://localhost:3000 (API accessible at /api).
 
 ### 3. Frontend Setup
 
@@ -42,3 +42,4 @@ npm install
 npm run dev
 
 The frontend will run on http://localhost:5173.
+API requests are automatically proxied to the backend.
