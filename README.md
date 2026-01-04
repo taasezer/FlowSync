@@ -15,7 +15,17 @@ FlowSync is a productivity platform designed to help users track their focus ses
 - Frontend: React (Vite), TypeScript, TailwindCSS, Shadcn/UI, TanStack Query, Zustand
 - Infrastructure: Docker
 
-## How to Run
+## 🐳 Plug & Play (Docker)
+
+The easiest way to run the entire application (Database + Backend + Frontend) is using Docker Compose.
+
+```bash
+docker-compose up --build
+```
+- App will be running at: http://localhost:5173
+- Backend API at: http://localhost:3000
+
+## 🚦 Manual Installation
 
 ### 1. Database Setup
 
