@@ -20,7 +20,7 @@ export function StatusManager({ isFlowActive }: StatusManagerProps) {
     teams: true
   });
 
-  const { mutate: updateSettings } = useUpdateSettings();
+  const { mutate: updateSettings, isPending } = useUpdateSettings();
 
   const handleStatusToggle = () => {
     const newState = !autoStatus;
@@ -90,6 +90,7 @@ export function StatusManager({ isFlowActive }: StatusManagerProps) {
             id="auto-status"
             checked={autoStatus}
             onCheckedChange={handleStatusToggle}
+            disabled={isPending}
           />
         </div>
 

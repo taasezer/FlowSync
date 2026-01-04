@@ -20,7 +20,7 @@ export function FocusMode({ onFocusChange }: FocusModeProps) {
     intensity: [70]
   });
 
-  const { mutate: createSession } = useCreateFocusSession();
+  const { mutate: createSession, isPending } = useCreateFocusSession();
 
   const handleFocusToggle = (enabled: boolean) => {
     setFocusEnabled(enabled);
@@ -68,6 +68,7 @@ export function FocusMode({ onFocusChange }: FocusModeProps) {
             id="focus-mode"
             checked={focusEnabled}
             onCheckedChange={handleFocusToggle}
+            disabled={isPending}
           />
         </div>
 
