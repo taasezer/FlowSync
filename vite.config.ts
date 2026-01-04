@@ -16,4 +16,18 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/socket.io': {
+        target: 'http://localhost:3000',
+        ws: true,
+      },
+      // Proxy other requests to backend if needed, or primarily use /api prefix
+      // For now, let's proxy specifically to avoid conflicts
+    },
+  },
 })
