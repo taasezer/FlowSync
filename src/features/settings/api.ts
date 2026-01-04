@@ -8,10 +8,8 @@ export const useSettings = () => {
     return useQuery({
         queryKey: ['settings', TEST_USER_ID],
         queryFn: async () => {
-            // In a real app we'd fetch by user ID or current session
-            // For now, we are just creating/updating, so this GET might fail if we don't implement findByUserId on backend
-            // Let's rely on mutation for now.
-            return {};
+            const response = await api.get(`/settings/user/${TEST_USER_ID}`);
+            return response.data || {};
         }
     });
 }

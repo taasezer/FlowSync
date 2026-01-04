@@ -15,12 +15,16 @@ export const useActivityData = () => {
     return useQuery({
         queryKey: ['activity-data'],
         queryFn: async () => {
-            // Temporary mock
-            return [
-                { time: '09:00', activity: 45 },
-                { time: '10:00', activity: 75 },
-                { time: '11:00', activity: 30 },
-            ] as ActivityData[];
+            const response = await api.get('/analytics');
+            // Transform backend data to UI format
+            // Assuming backend returns ActivitySession[]
+            const sessions = response.data;
+            if (!sessions || sessions.length === 0) return [];
+
+            return sessions.slice(-5).map((s: any) => ({
+                time: new Date(s.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                activity: s.activityLevel
+            }));
         }
     });
 };
@@ -29,7 +33,8 @@ export const useWeeklyStats = () => {
     return useQuery({
         queryKey: ['weekly-stats'],
         queryFn: async () => {
-            // Temporary mock matching UI expectation
+            // For now, returning static data until backend aggregation endpoint is ready
+            // TODO: Implement /analytics/weekly endpoint
             return [
                 { day: 'Pzt', minutes: 120 },
                 { day: 'Sal', minutes: 240 },

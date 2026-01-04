@@ -22,6 +22,11 @@ export class SettingsController {
         return this.settingsService.findOne(id);
     }
 
+    @Get('user/:userId')
+    findByUserId(@Param('userId') userId: string) {
+        return this.settingsService.findByUserId(userId);
+    }
+
     @Patch(':id')
     update(@Param('id') id: string, @Body() updateSettingDto: UpdateSettingDto) {
         return this.settingsService.update(id, updateSettingDto);

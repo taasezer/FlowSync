@@ -31,6 +31,9 @@ let SettingsController = class SettingsController {
     findOne(id) {
         return this.settingsService.findOne(id);
     }
+    findByUserId(userId) {
+        return this.settingsService.findByUserId(userId);
+    }
     update(id, updateSettingDto) {
         return this.settingsService.update(id, updateSettingDto);
     }
@@ -59,6 +62,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], SettingsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)('user/:userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], SettingsController.prototype, "findByUserId", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
