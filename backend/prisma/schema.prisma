@@ -21,6 +21,8 @@ model User {
   updatedAt DateTime @updatedAt
   
   sessions  ActivitySession[]
+  focusSessions FocusSession[]
+  settings UserSettings?
 }
 
 model ActivitySession {
@@ -31,5 +33,26 @@ model ActivitySession {
   activityScore Int?
   
   userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model FocusSession {
+  id        String   @id @default(uuid())
+  startTime DateTime @default(now())
+  endTime   DateTime?
+  duration  Int?     // in seconds
+  mode      String   // 'focused', 'deep', 'pomodoro'
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model UserSettings {
+  id        String   @id @default(uuid())
+  theme     String   @default("system") // 'light', 'dark', 'system'
+  notifications Boolean @default(true)
+  focusTemplates Json?  // Store preset configurations
+  
+  userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
 }

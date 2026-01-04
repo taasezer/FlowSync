@@ -5,7 +5,7 @@ import { UpdateFocusDto } from './dto/update-focus.dto';
 
 @Controller('focus')
 export class FocusController {
-  constructor(private readonly focusService: FocusService) {}
+  constructor(private readonly focusService: FocusService) { }
 
   @Post()
   create(@Body() createFocusDto: CreateFocusDto) {
@@ -19,16 +19,16 @@ export class FocusController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.focusService.findOne(+id);
+    return this.focusService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFocusDto: UpdateFocusDto) {
-    return this.focusService.update(+id, updateFocusDto);
+    return this.focusService.update(id, updateFocusDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.focusService.remove(+id);
+    return this.focusService.remove(id);
   }
 }
