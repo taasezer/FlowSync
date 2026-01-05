@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
 
 export interface ActivityData {
@@ -33,17 +33,41 @@ export const useWeeklyStats = () => {
     return useQuery({
         queryKey: ['weekly-stats'],
         queryFn: async () => {
-            // For now, returning static data until backend aggregation endpoint is ready
-            // TODO: Implement /analytics/weekly endpoint
-            return [
-                { day: 'Pzt', minutes: 120 },
-                { day: 'Sal', minutes: 240 },
-                { day: 'Çar', minutes: 180 },
-                { day: 'Per', minutes: 300 },
-                { day: 'Cum', minutes: 150 },
-                { day: 'Cmt', minutes: 60 },
-                { day: 'Paz', minutes: 90 },
-            ] as WeeklyData[];
+            const res = await api.get('/work/performance');
+            return res.data;
+        }
+    });
+};
+
+export const useTeamActivity = () => {
+    return useQuery({
+        queryKey: ['team-activity'],
+        queryFn: async () => {
+            const res = await api.get('/work/team-activity');
+            return res.data;
+        }
+    });
+};
+
+export const useSettings = () => {
+    return useQuery({
+        queryKey: ['user-settings'],
+        queryFn: async () => {
+            const res = await api.get('/settings');
+            return res.data;
+        }
+    });
+};
+
+export const useUpdateSettings = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (data: any) => {
+            const res = await api.patch('/settings', data);
+            return res.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['user-settings'] });
         }
     });
 };

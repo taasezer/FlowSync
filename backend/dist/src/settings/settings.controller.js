@@ -15,77 +15,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsController = void 0;
 const common_1 = require("@nestjs/common");
 const settings_service_1 = require("./settings.service");
-const create_setting_dto_1 = require("./dto/create-setting.dto");
-const update_setting_dto_1 = require("./dto/update-setting.dto");
+const passport_1 = require("@nestjs/passport");
 let SettingsController = class SettingsController {
     settingsService;
     constructor(settingsService) {
         this.settingsService = settingsService;
     }
-    create(createSettingDto) {
-        return this.settingsService.create(createSettingDto);
+    getSettings(req) {
+        return this.settingsService.getSettings(req.user.id);
     }
-    findAll() {
-        return this.settingsService.findAll();
-    }
-    findOne(id) {
-        return this.settingsService.findOne(id);
-    }
-    findByUserId(userId) {
-        return this.settingsService.findByUserId(userId);
-    }
-    update(id, updateSettingDto) {
-        return this.settingsService.update(id, updateSettingDto);
-    }
-    remove(id) {
-        return this.settingsService.remove(id);
+    updateSettings(req, body) {
+        return this.settingsService.updateSettings(req.user.id, body);
     }
 };
 exports.SettingsController = SettingsController;
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_setting_dto_1.CreateSettingDto]),
-    __metadata("design:returntype", void 0)
-], SettingsController.prototype, "create", null);
-__decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], SettingsController.prototype, "findAll", null);
+], SettingsController.prototype, "getSettings", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], SettingsController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Get)('user/:userId'),
-    __param(0, (0, common_1.Param)('userId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], SettingsController.prototype, "findByUserId", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Patch)(),
+    __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_setting_dto_1.UpdateSettingDto]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
-], SettingsController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], SettingsController.prototype, "remove", null);
+], SettingsController.prototype, "updateSettings", null);
 exports.SettingsController = SettingsController = __decorate([
     (0, common_1.Controller)('settings'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __metadata("design:paramtypes", [settings_service_1.SettingsService])
 ], SettingsController);
 //# sourceMappingURL=settings.controller.js.map

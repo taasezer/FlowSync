@@ -3,13 +3,14 @@ import { Toaster } from '../components/ui/sonner';
 import { FlowStatusIndicator } from '../features/dashboard/FlowStatusIndicator';
 import { ActivityTracker } from '../features/dashboard/ActivityTracker';
 import { StatusManager } from '../features/dashboard/StatusManager';
+import { WorkControls } from '../features/dashboard/WorkControls';
 import { FocusMode } from '../features/focus/FocusMode';
 import { BreakReminders } from '../features/focus/BreakReminders';
 import { Statistics } from '../features/statistics/Statistics';
 import { UserInsights } from '../features/insights/UserInsights';
 import { Code2, Settings, BarChart3, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { useActivityData, useWeeklyStats } from '../features/dashboard/api';
+import { useActivityData, useWeeklyStats, useTeamActivity } from '../features/dashboard/api';
 import { connectSocket, disconnectSocket, socket } from '../lib/socket';
 import { Route, Switch, useLocation } from 'wouter';
 import LoginPage from '../features/auth/LoginPage';
@@ -39,14 +40,43 @@ function MainApp() {
     };
   }, []);
 
-  const { data: activityData = [] } = useActivityData();
-  const { data: weeklyData = [] } = useWeeklyStats();
+  const { data: teamActivity } = useTeamActivity();
 
-  const flowDistribution = [
-    { name: 'Derin Akış', value: 720 },
-    { name: 'Hafif Akış', value: 480 },
-    { name: 'Dağınık', value: 180 },
-    { name: 'Mola', value: 120 }
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const currentUser = teamActivity?.users?.find((u: any) => u.email === user?.email);
+
+  const derivedActivityData = currentUser?.recentActivity ? (() => {
+    const activityMap = new Map<string, number>();
+    const today = new Date();
+    // Initialize last 7 days with 0
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+      activityMap.set(key, 0);
+    }
+
+    // Fill with actual data
+    currentUser.recentActivity.forEach((item: any) => {
+      const d = new Date(item.date);
+      const key = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+      if (activityMap.has(key)) {
+        activityMap.set(key, (activityMap.get(key) || 0) + 1);
+      }
+    });
+
+    return Array.from(activityMap.entries()).map(([time, activity]) => ({ time, activity }));
+  })() : [];
+
+
+
+  const { data: statsData } = useWeeklyStats();
+  // Default to empty/mock if loading or error, but ideally backend returns correct shape
+  const weeklyData = statsData?.weeklyData || [];
+  const flowDistribution = statsData?.flowDistribution || [
+    { name: 'Odaklanma', value: 0 },
+    { name: 'Mola', value: 0 }
   ];
 
   const handleLogout = () => {
@@ -94,9 +124,17 @@ function MainApp() {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <FlowStatusIndicator activityLevel={activityLevel} />
-              <StatusManager isFlowActive={activityLevel > 70} />
+              <div className="space-y-6">
+                <WorkControls />
+                <StatusManager isFlowActive={activityLevel > 70} />
+              </div>
             </div>
-            <ActivityTracker activityData={activityData} keystrokes={12847} mouseClicks={3421} linesOfCode={342} />
+            <ActivityTracker
+              activityData={derivedActivityData.length > 0 ? derivedActivityData : [{ time: 'Veri Yok', activity: 0 }]}
+              commits={currentUser?.githubStats?.todayCommits || 0}
+              repositories={currentUser?.githubStats?.publicRepos || 0}
+              impactScore={(currentUser?.githubStats?.todayCommits || 0) * 12}
+            />
           </TabsContent>
 
           <TabsContent value="focus" className="space-y-6">

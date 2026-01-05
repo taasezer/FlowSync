@@ -26,7 +26,7 @@ export default function AdminDashboard() {
                         <CardTitle className="text-sm font-medium">Toplam Kullanıcı</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalUsers}</div>
+                        <div className="text-2xl font-bold">{stats.overview?.totalUsers || 0}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -34,15 +34,15 @@ export default function AdminDashboard() {
                         <CardTitle className="text-sm font-medium">Toplam Oturum</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalSessions}</div>
+                        <div className="text-2xl font-bold">{stats.overview?.totalSessions || 0}</div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Toplam Odak (Dk)</CardTitle>
+                        <CardTitle className="text-sm font-medium">Toplam Odak (Sa)</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalDuration}</div>
+                        <div className="text-2xl font-bold">{Math.round(stats.overview?.totalHours || 0)}</div>
                     </CardContent>
                 </Card>
             </div>
@@ -58,6 +58,8 @@ export default function AdminDashboard() {
                                 <TableHead>Ad Soyad</TableHead>
                                 <TableHead>Email</TableHead>
                                 <TableHead>Rol</TableHead>
+                                <TableHead>GitHub</TableHead>
+                                <TableHead>Durum</TableHead>
                                 <TableHead>Çalışma Saati</TableHead>
                                 <TableHead>Verimlilik</TableHead>
                                 <TableHead>Kayıt Tarihi</TableHead>
@@ -71,6 +73,35 @@ export default function AdminDashboard() {
                                     <TableCell>
                                         <span className={`px-2 py-1 rounded-full text-xs ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
                                             {user.role}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
+                                        {user.githubStats ? (
+                                            <div className="flex items-center gap-2">
+                                                <img src={user.githubStats.avatarUrl} alt="gh" className="w-6 h-6 rounded-full" />
+                                                <div className="flex flex-col">
+                                                    <a href={user.githubUrl} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline text-xs font-medium">
+                                                        {user.githubStats.username}
+                                                    </a>
+                                                    <span className="text-[10px] text-muted-foreground">
+                                                        {user.githubStats.todayCommits} commit bugün
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ) : user.githubUrl ? (
+                                            <a href={user.githubUrl} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline text-xs">
+                                                Link
+                                            </a>
+                                        ) : (
+                                            <span className="text-muted-foreground text-xs">-</span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold
+                                            ${user.status === 'WORKING' ? 'bg-green-100 text-green-700' :
+                                                user.status === 'BREAK' ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-gray-100 text-gray-500'}`}>
+                                            {user.status === 'WORKING' ? 'Çalışıyor' : user.status === 'BREAK' ? 'Molada' : 'Mesai Dışı'}
                                         </span>
                                     </TableCell>
                                     <TableCell>{user.totalHours ?? 0} sa</TableCell>

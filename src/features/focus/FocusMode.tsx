@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCreateFocusSession } from './api';
+import { useSettings, useUpdateSettings } from '../dashboard/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
@@ -12,13 +13,28 @@ interface FocusModeProps {
 }
 
 export function FocusMode({ onFocusChange }: FocusModeProps) {
+  const { data: settings, isLoading } = useSettings();
+  const { mutate: updateSettings } = useUpdateSettings();
+
   const [focusEnabled, setFocusEnabled] = useState(false);
-  const [settings, setSettings] = useState({
+  const [localSettings, setLocalSettings] = useState({
     blockSocialMedia: true,
     blockNotifications: true,
     dimScreen: false,
     intensity: [70]
   });
+
+  // Sync local state with backend settings on load
+  useEffect(() => {
+    if (settings) {
+      setLocalSettings({
+        blockSocialMedia: settings.focusBlockSocial ?? true,
+        blockNotifications: settings.focusBlockNotify ?? true,
+        dimScreen: settings.focusDimScreen ?? false,
+        intensity: [settings.focusIntensity ?? 70]
+      });
+    }
+  }, [settings]);
 
   const { mutate: createSession, isPending } = useCreateFocusSession();
 
@@ -83,10 +99,11 @@ export function FocusMode({ onFocusChange }: FocusModeProps) {
               </div>
               <Switch
                 id="block-social"
-                checked={settings.blockSocialMedia}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, blockSocialMedia: checked })
-                }
+                checked={localSettings.blockSocialMedia}
+                onCheckedChange={(checked) => {
+                  setLocalSettings({ ...localSettings, blockSocialMedia: checked });
+                  updateSettings({ focusBlockSocial: checked });
+                }}
               />
             </div>
 
@@ -99,10 +116,11 @@ export function FocusMode({ onFocusChange }: FocusModeProps) {
               </div>
               <Switch
                 id="block-notifications"
-                checked={settings.blockNotifications}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, blockNotifications: checked })
-                }
+                checked={localSettings.blockNotifications}
+                onCheckedChange={(checked) => {
+                  setLocalSettings({ ...localSettings, blockNotifications: checked });
+                  updateSettings({ focusBlockNotify: checked });
+                }}
               />
             </div>
 
@@ -115,21 +133,25 @@ export function FocusMode({ onFocusChange }: FocusModeProps) {
               </div>
               <Switch
                 id="dim-screen"
-                checked={settings.dimScreen}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, dimScreen: checked })
-                }
+                checked={localSettings.dimScreen}
+                onCheckedChange={(checked) => {
+                  setLocalSettings({ ...localSettings, dimScreen: checked });
+                  updateSettings({ focusDimScreen: checked });
+                }}
               />
             </div>
 
             <div className="space-y-2 pt-2">
               <div className="flex justify-between">
                 <Label>Odak Yoğunluğu</Label>
-                <span className="text-sm text-muted-foreground">{settings.intensity[0]}%</span>
+                <span className="text-sm text-muted-foreground">{localSettings.intensity[0]}%</span>
               </div>
               <Slider
-                value={settings.intensity}
-                onValueChange={(value) => setSettings({ ...settings, intensity: value })}
+                value={localSettings.intensity}
+                onValueChange={(value) => {
+                  setLocalSettings({ ...localSettings, intensity: value });
+                  updateSettings({ focusIntensity: value[0] });
+                }}
                 max={100}
                 step={10}
               />

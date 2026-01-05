@@ -19,6 +19,8 @@ export declare class AnalyticsService {
             password: string;
             role: string;
             name: string | null;
+            githubUrl: string | null;
+            status: string;
             createdAt: Date;
             updatedAt: Date;
         };

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Code, Keyboard, MousePointer } from 'lucide-react';
+import { GitCommit, GitPullRequest, Zap } from 'lucide-react';
 
 interface ActivityData {
   time: string;
@@ -9,22 +9,22 @@ interface ActivityData {
 
 interface ActivityTrackerProps {
   activityData: ActivityData[];
-  keystrokes: number;
-  mouseClicks: number;
-  linesOfCode: number;
+  commits: number;
+  repositories: number;
+  impactScore: number;
 }
 
 export function ActivityTracker({
   activityData,
-  keystrokes,
-  mouseClicks,
-  linesOfCode
+  commits,
+  repositories,
+  impactScore
 }: ActivityTrackerProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Aktivite Takibi</CardTitle>
-        <CardDescription>Son 1 saatin kod yazma aktivitesi</CardDescription>
+        <CardDescription>Son 7 günlük GitHub aktivitesi</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="h-[200px] mb-6">
@@ -58,21 +58,21 @@ export function ActivityTracker({
 
         <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col items-center p-4 rounded-lg bg-muted/50">
-            <Keyboard className="w-5 h-5 text-primary mb-2" />
-            <div className="font-semibold">{keystrokes.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">Tuş Vuruşu</div>
+            <GitCommit className="w-5 h-5 text-primary mb-2" />
+            <div className="font-semibold">{commits.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">Commit</div>
           </div>
 
           <div className="flex flex-col items-center p-4 rounded-lg bg-muted/50">
-            <MousePointer className="w-5 h-5 text-primary mb-2" />
-            <div className="font-semibold">{mouseClicks.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">Tıklama</div>
+            <GitPullRequest className="w-5 h-5 text-primary mb-2" />
+            <div className="font-semibold">{repositories.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">Repo</div>
           </div>
 
           <div className="flex flex-col items-center p-4 rounded-lg bg-muted/50">
-            <Code className="w-5 h-5 text-primary mb-2" />
-            <div className="font-semibold">{linesOfCode}</div>
-            <div className="text-xs text-muted-foreground">Satır Kod</div>
+            <Zap className="w-5 h-5 text-primary mb-2" />
+            <div className="font-semibold">{impactScore}</div>
+            <div className="text-xs text-muted-foreground">Etki Skoru</div>
           </div>
         </div>
       </CardContent>

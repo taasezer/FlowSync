@@ -24,6 +24,8 @@ export declare class AnalyticsGateway implements OnGatewayConnection, OnGatewayD
             password: string;
             role: string;
             name: string | null;
+            githubUrl: string | null;
+            status: string;
             createdAt: Date;
             updatedAt: Date;
         };

@@ -7,9 +7,20 @@ import { FocusModule } from './focus/focus.module';
 import { SettingsModule } from './settings/settings.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
+import { WorkModule } from './work/work.module';
+import { GithubModule } from './github/github.module';
 
 @Module({
-  imports: [AnalyticsModule, PrismaModule, FocusModule, SettingsModule, AuthModule, AdminModule],
+  imports: [
+    PrismaModule,
+    AnalyticsModule,
+    FocusModule,
+    SettingsModule,
+    AuthModule,
+    AdminModule,
+    WorkModule,
+    GithubModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

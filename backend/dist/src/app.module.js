@@ -16,12 +16,23 @@ const focus_module_1 = require("./focus/focus.module");
 const settings_module_1 = require("./settings/settings.module");
 const auth_module_1 = require("./auth/auth.module");
 const admin_module_1 = require("./admin/admin.module");
+const work_module_1 = require("./work/work.module");
+const github_module_1 = require("./github/github.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [analytics_module_1.AnalyticsModule, prisma_module_1.PrismaModule, focus_module_1.FocusModule, settings_module_1.SettingsModule, auth_module_1.AuthModule, admin_module_1.AdminModule],
+        imports: [
+            prisma_module_1.PrismaModule,
+            analytics_module_1.AnalyticsModule,
+            focus_module_1.FocusModule,
+            settings_module_1.SettingsModule,
+            auth_module_1.AuthModule,
+            admin_module_1.AdminModule,
+            work_module_1.WorkModule,
+            github_module_1.GithubModule,
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

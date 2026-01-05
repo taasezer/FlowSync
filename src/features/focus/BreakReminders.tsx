@@ -7,12 +7,16 @@ import { Coffee, WatchIcon, Droplets, Eye } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Progress } from '../../components/ui/progress';
 import { toast } from 'sonner';
+import { useSettings, useUpdateSettings } from '../dashboard/api';
 
 interface BreakRemindersProps {
   flowDuration: number;
 }
 
 export function BreakReminders({ flowDuration }: BreakRemindersProps) {
+  const { data: settings } = useSettings();
+  const { mutate: updateSettings } = useUpdateSettings();
+
   const [adaptiveMode, setAdaptiveMode] = useState(true);
   const [nextBreakIn, setNextBreakIn] = useState(25);
   const [reminders, setReminders] = useState({
@@ -21,6 +25,19 @@ export function BreakReminders({ flowDuration }: BreakRemindersProps) {
     stretch: true,
     longBreak: false
   });
+
+  // Sync with backend settings
+  useEffect(() => {
+    if (settings) {
+      setAdaptiveMode(settings.breakAdaptive ?? true);
+      setReminders({
+        water: settings.breakWater ?? true,
+        eyes: settings.breakEyes ?? true,
+        stretch: settings.breakStretch ?? true,
+        longBreak: settings.breakLong ?? false
+      });
+    }
+  }, [settings]);
 
   useEffect(() => {
     // Adaptive break timing based on flow duration
@@ -79,7 +96,10 @@ export function BreakReminders({ flowDuration }: BreakRemindersProps) {
           <Switch
             id="adaptive-mode"
             checked={adaptiveMode}
-            onCheckedChange={setAdaptiveMode}
+            onCheckedChange={(checked) => {
+              setAdaptiveMode(checked);
+              updateSettings({ breakAdaptive: checked });
+            }}
           />
         </div>
 
@@ -104,9 +124,10 @@ export function BreakReminders({ flowDuration }: BreakRemindersProps) {
             </div>
             <Switch
               checked={reminders.water}
-              onCheckedChange={(checked) =>
-                setReminders({ ...reminders, water: checked })
-              }
+              onCheckedChange={(checked) => {
+                setReminders({ ...reminders, water: checked });
+                updateSettings({ breakWater: checked });
+              }}
             />
           </div>
 
@@ -120,9 +141,10 @@ export function BreakReminders({ flowDuration }: BreakRemindersProps) {
             </div>
             <Switch
               checked={reminders.eyes}
-              onCheckedChange={(checked) =>
-                setReminders({ ...reminders, eyes: checked })
-              }
+              onCheckedChange={(checked) => {
+                setReminders({ ...reminders, eyes: checked });
+                updateSettings({ breakEyes: checked });
+              }}
             />
           </div>
 
@@ -136,9 +158,10 @@ export function BreakReminders({ flowDuration }: BreakRemindersProps) {
             </div>
             <Switch
               checked={reminders.stretch}
-              onCheckedChange={(checked) =>
-                setReminders({ ...reminders, stretch: checked })
-              }
+              onCheckedChange={(checked) => {
+                setReminders({ ...reminders, stretch: checked });
+                updateSettings({ breakStretch: checked });
+              }}
             />
           </div>
 
@@ -152,9 +175,10 @@ export function BreakReminders({ flowDuration }: BreakRemindersProps) {
             </div>
             <Switch
               checked={reminders.longBreak}
-              onCheckedChange={(checked) =>
-                setReminders({ ...reminders, longBreak: checked })
-              }
+              onCheckedChange={(checked) => {
+                setReminders({ ...reminders, longBreak: checked });
+                updateSettings({ breakLong: checked });
+              }}
             />
           </div>
         </div>

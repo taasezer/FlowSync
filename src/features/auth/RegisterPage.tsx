@@ -13,6 +13,7 @@ const registerSchema = z.object({
     name: z.string().min(2),
     email: z.string().email(),
     password: z.string().min(6),
+    githubUrl: z.string().optional(),
 });
 
 type RegisterForm = z.infer<typeof registerSchema>;
@@ -44,6 +45,9 @@ export default function RegisterPage() {
                     <form onSubmit={form.handleSubmit((data) => register(data))} className="space-y-4">
                         <div>
                             <Input placeholder="Ad Soyad" {...form.register('name')} />
+                        </div>
+                        <div>
+                            <Input placeholder="GitHub Profili (Opsiyonel)" {...form.register('githubUrl')} />
                         </div>
                         <div>
                             <Input placeholder="Email" {...form.register('email')} />

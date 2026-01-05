@@ -19,12 +19,30 @@ model User {
   password  String   // Hashed password
   role      String   @default("USER") // 'USER' or 'ADMIN'
   name      String?
+  githubUrl String?  // GitHub Profile URL
+  status    String   @default("OFFLINE") // 'OFFLINE', 'WORKING', 'BREAK'
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   sessions  ActivitySession[]
   focusSessions FocusSession[]
-  settings UserSettings?
+  settings  UserSettings?
+  workSessions WorkSession[]
+}
+
+
+model WorkSession {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  startTime      DateTime  @default(now())
+  endTime        DateTime?
+  type           String    // 'WORK' or 'BREAK'
+  
+  // New Performance Metrics
+  isFocusMode    Boolean   @default(false)
+  focusIntensity Int       @default(0) // 0-100
+  efficiencyScore Int?     // Calculated score
 }
 
 model ActivitySession {
@@ -50,11 +68,23 @@ model FocusSession {
 }
 
 model UserSettings {
-  id        String   @id @default(uuid())
-  theme     String   @default("system") // 'light', 'dark', 'system'
-  notifications Boolean @default(true)
-  focusTemplates Json?  // Store preset configurations
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id])
   
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+  // Focus Settings
+  focusBlockSocial   Boolean @default(true)
+  focusBlockNotify   Boolean @default(true)
+  focusDimScreen     Boolean @default(false)
+  focusIntensity     Int     @default(70)
+  
+  // Break Settings
+  breakAdaptive      Boolean @default(true)
+  breakWater         Boolean @default(true)
+  breakEyes          Boolean @default(true)
+  breakStretch       Boolean @default(true)
+  breakLong          Boolean @default(false)
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }

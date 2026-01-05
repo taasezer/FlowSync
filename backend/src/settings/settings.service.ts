@@ -1,56 +1,33 @@
+
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateSettingDto } from './dto/create-setting.dto';
-import { UpdateSettingDto } from './dto/update-setting.dto';
 
 @Injectable()
 export class SettingsService {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(private prisma: PrismaService) { }
 
-    async create(createSettingDto: CreateSettingDto) {
-        if (!createSettingDto.userId) {
-            throw new Error('User ID is required');
-        }
-
-        // Check if settings already exist for this user
-        const existing = await this.prisma.userSettings.findUnique({
-            where: { userId: createSettingDto.userId }
+    async getSettings(userId: string) {
+        let settings = await this.prisma.userSettings.findUnique({
+            where: { userId }
         });
 
-        if (existing) {
-            return this.update(existing.id, createSettingDto);
+        if (!settings) {
+            settings = await this.prisma.userSettings.create({
+                data: { userId }
+            });
         }
 
-        return this.prisma.userSettings.create({
-            data: {
-                userId: createSettingDto.userId,
-                theme: createSettingDto.theme || 'system',
-                notifications: createSettingDto.notifications ?? true,
-                focusTemplates: createSettingDto.focusTemplates ?? {},
-            },
-        });
+        return settings;
     }
 
-    findAll() {
-        return this.prisma.userSettings.findMany();
-    }
+    async updateSettings(userId: string, data: any) {
+        // Filter out read-only fields if necessary, but DTO validation usually handles this
+        // For now, allow direct update of boolean/int fields
+        const { id, userId: uid, createdAt, updatedAt, ...updateData } = data;
 
-    findOne(id: string) {
-        return this.prisma.userSettings.findUnique({ where: { id } });
-    }
-
-    async findByUserId(userId: string) {
-        return this.prisma.userSettings.findUnique({ where: { userId } });
-    }
-
-    update(id: string, updateSettingDto: UpdateSettingDto) {
         return this.prisma.userSettings.update({
-            where: { id },
-            data: updateSettingDto,
+            where: { userId },
+            data: updateData
         });
-    }
-
-    remove(id: string) {
-        return this.prisma.userSettings.delete({ where: { id } });
     }
 }

@@ -1,141 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Badge } from '../../components/ui/badge';
-import { User, Quote, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '../../components/ui/avatar';
-
-interface Persona {
-  name: string;
-  role: string;
-  experience: string;
-  age: number;
-  avatar: string;
-  color: string;
-  painPoints: string[];
-  needs: string[];
-  quote: string;
-  goals: string[];
-}
-
-const personas: Persona[] = [
-  {
-    name: 'Selin Yılmaz',
-    role: 'Junior Frontend Developer',
-    experience: '1.5 yıl',
-    age: 24,
-    avatar: 'SY',
-    color: 'blue',
-    quote: "Sürekli kesintiler yüzünden odaklanmayı kaybediyorum. Slack bildirimleri kod yazarken beni hep bölüyor.",
-    painPoints: [
-      'Bağlam değiştirme maliyeti yüksek',
-      'Slack ve email bildirimleri sürekli kesintiye neden oluyor',
-      'Kod yazarken akış durumunu korumakta zorlanıyor',
-      'Hangi görevlere ne kadar süre harcadığını takip edemiyor'
-    ],
-    needs: [
-      'Bildirim yönetimi için otomatik sistem',
-      'Odaklanma durumunu takip edebilen bir araç',
-      'Mola zamanlarını hatırlatan sistem',
-      'Günlük verimlilik raporu'
-    ],
-    goals: [
-      'Kesintisiz 2 saatlik kod yazma seansları',
-      'Günde en az 4 saat derin odaklanma',
-      'Sprint hedeflerini zamanında tamamlama'
-    ]
-  },
-  {
-    name: 'Emre Kaya',
-    role: 'Mid-level Backend Developer',
-    experience: '4 yıl',
-    age: 29,
-    avatar: 'EK',
-    color: 'green',
-    quote: "Günde 5-6 toplantı var. Arada kod yazmaya çalışıyorum ama sürekli moddan çıkıyorum.",
-    painPoints: [
-      'Yoğun toplantı takvimi kod yazma süresini azaltıyor',
-      'Toplantılar arası kısa zaman dilimleri verimsiz',
-      'Ekip üyeleri durum bilgisini bilmediği için kesintiye uğruyor',
-      'Akşam geç saatlere kadar çalışmak zorunda kalıyor'
-    ],
-    needs: [
-      'Toplantı aralarında optimal çalışma süreleri',
-      'Otomatik "Meşgul" durum bildirimi',
-      'Takım için şeffaf çalışma durumu göstergesi',
-      'Adaptif zaman yönetimi önerileri'
-    ],
-    goals: [
-      'Toplantı saatlerini optimize etme',
-      'İş-yaşam dengesi kurma',
-      'Günlük kod yazma hedeflerine ulaşma',
-      'Ekip içi kesintileri azaltma'
-    ]
-  },
-  {
-    name: 'Mert Demir',
-    role: 'Senior Full-stack Developer & Tech Lead',
-    experience: '8 yıl',
-    age: 34,
-    avatar: 'MD',
-    color: 'purple',
-    quote: "Hem kod yazmam hem de takımı yönetmem gerekiyor. İkisini birden yapmak çok zor.",
-    painPoints: [
-      'Teknik liderlik ve kod yazma arasında denge kuramıyor',
-      'Junior geliştiricilerin soruları odaklanmayı bozuyor',
-      'Code review ve mentörlük zamanı çakışıyor',
-      'Kritik görevler için kesintisiz zaman bulamıyor',
-      'Takım üretkenliğini takip etmekte zorlanıyor'
-    ],
-    needs: [
-      'Ekip için akış durumu dashboard\'u',
-      'Kesinti yönetimi sistemi',
-      'Mentörlük için uygun zaman dilimi önerileri',
-      'Takım verimlilik metrikleri',
-      'Otomatik durum senkronizasyonu'
-    ],
-    goals: [
-      'Günde 3 saat kesintisiz kod yazma',
-      'Ekip verimliliğini %30 artırma',
-      'Code review süreçlerini optimize etme',
-      'Sağlıklı iş-yaşam dengesi'
-    ]
-  }
-];
-
-const interviewFindings = [
-  {
-    category: 'Kesintiler',
-    insight: 'Katılımcıların %100\'ü Slack, email ve toplantıların akışlarını bozduğunu belirtti',
-    impact: 'Yüksek',
-    quote: '"Kod yazarken bir bildirim geldiğinde, tekrar aynı odaklanma seviyesine gelmem 15-20 dakika sürüyor."'
-  },
-  {
-    category: 'Bağlam Değiştirme',
-    insight: 'Görevler arası geçiş ortalama 23 dakika konsantrasyon kaybına neden oluyor',
-    impact: 'Yüksek',
-    quote: '"Bir kod bloğu üzerinde çalışırken toplantıya giriyorum, döndüğümde ne yaptığımı hatırlamıyorum."'
-  },
-  {
-    category: 'Mola Yönetimi',
-    insight: 'Geliştiricilerin %80\'i düzenli mola almadığını, bunun yorgunluğa yol açtığını söyledi',
-    impact: 'Orta',
-    quote: '"Mola almam gerektiğini biliyorum ama akış halindeyken duramıyorum, sonra çok yorgun oluyorum."'
-  },
-  {
-    category: 'Durum Bildirimi',
-    insight: 'Geliştiriciler manuel olarak durum güncellemediği için gereksiz kesintilere maruz kalıyor',
-    impact: 'Orta',
-    quote: '"Slack\'te \'busy\' yazmayı unutuyorum, sonra herkes soru soruyor."'
-  },
-  {
-    category: 'Verimlilik Takibi',
-    insight: 'Katılımcılar ne kadar süre verimli çalıştıklarını ölçemediğini belirtti',
-    impact: 'Orta',
-    quote: '"Gün sonunda ne kadar işe yarar kod yazdığımı bilemiyorum, sadece yorgunum."'
-  }
-];
+import { User, Quote, AlertCircle, CheckCircle2, GitCommit } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { useTeamActivity } from '../dashboard/api';
 
 export function UserInsights() {
+  const { data, isLoading } = useTeamActivity();
+
+  if (isLoading) return <div>Veriler yükleniyor...</div>;
+
+  const personas = data?.personas || [];
+  const findings = data?.findings || [];
+
   const getAvatarColorClass = (color: string) => {
     const colors: Record<string, string> = {
       blue: 'bg-blue-500',
@@ -163,31 +40,36 @@ export function UserInsights() {
             Kullanıcı Araştırması Bulguları
           </CardTitle>
           <CardDescription>
-            3 yazılım geliştiricisi ile yapılan derinlemesine röportajlardan elde edilen içgörüler
+            Ekip üyelerinin GitHub aktivitelerinden elde edilen gerçek zamanlı içgörüler
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="personas" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="personas">Kullanıcı Personaları</TabsTrigger>
-              <TabsTrigger value="findings">Röportaj Bulguları</TabsTrigger>
+              <TabsTrigger value="findings">Aktivite Bulguları</TabsTrigger>
             </TabsList>
 
             <TabsContent value="personas" className="space-y-6">
-              {personas.map((persona, index) => (
+              {personas.length === 0 ? (
+                <div className="text-center p-8 text-muted-foreground">Henüz GitHub bağlantısı olan kullanıcı bulunamadı.</div>
+              ) : personas.map((persona: any, index: number) => (
                 <Card key={index} className="border-l-4" style={{ borderLeftColor: getBorderColorClass(persona.color) }}>
                   <CardHeader>
                     <div className="flex items-start gap-4">
                       <Avatar className={`w-12 h-12 ${getAvatarColorClass(persona.color)}`}>
-                        <AvatarFallback className="text-white">{persona.avatar}</AvatarFallback>
+                        <AvatarImage src={persona.avatar} />
+                        <AvatarFallback className="text-white">{persona.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <CardTitle className="flex items-center gap-2">
-                          {persona.name}
+                          <a href={persona.githubUrl} target="_blank" rel="noreferrer" className="hover:underline">
+                            {persona.name}
+                          </a>
                           <Badge variant="secondary">{persona.role}</Badge>
                         </CardTitle>
                         <CardDescription className="mt-1">
-                          {persona.age} yaşında • {persona.experience} deneyim
+                          {persona.bio}
                         </CardDescription>
                       </div>
                     </div>
@@ -207,7 +89,7 @@ export function UserInsights() {
                           Sorun Noktaları
                         </h4>
                         <ul className="space-y-2">
-                          {persona.painPoints.map((point, idx) => (
+                          {persona.painPoints?.map((point: string, idx: number) => (
                             <li key={idx} className="text-sm flex gap-2">
                               <span className="text-red-500 shrink-0">•</span>
                               <span className="text-muted-foreground">{point}</span>
@@ -223,7 +105,7 @@ export function UserInsights() {
                           İhtiyaçlar
                         </h4>
                         <ul className="space-y-2">
-                          {persona.needs.map((need, idx) => (
+                          {persona.needs?.map((need: string, idx: number) => (
                             <li key={idx} className="text-sm flex gap-2">
                               <span className="text-green-500 shrink-0">•</span>
                               <span className="text-muted-foreground">{need}</span>
@@ -237,7 +119,7 @@ export function UserInsights() {
                     <div>
                       <h4 className="font-medium mb-2">Hedefler</h4>
                       <div className="flex flex-wrap gap-2">
-                        {persona.goals.map((goal, idx) => (
+                        {persona.goals?.map((goal: string, idx: number) => (
                           <Badge key={idx} variant="outline">
                             {goal}
                           </Badge>
@@ -251,25 +133,33 @@ export function UserInsights() {
 
             <TabsContent value="findings" className="space-y-4">
               <div className="grid gap-4">
-                {interviewFindings.map((finding, index) => (
+                {findings.length === 0 ? (
+                  <div className="text-center p-8 text-muted-foreground">Son aktivite bulunamadı.</div>
+                ) : findings.map((finding: any, index: number) => (
                   <Card key={index}>
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div>
-                          <CardTitle className="text-lg">{finding.category}</CardTitle>
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <GitCommit className="w-4 h-4" />
+                            {finding.category}
+                          </CardTitle>
                           <CardDescription className="mt-1">{finding.insight}</CardDescription>
                         </div>
                         <Badge
-                          variant={finding.impact === 'Yüksek' ? 'destructive' : 'secondary'}
+                          variant='secondary'
                         >
-                          {finding.impact} Etki
+                          {new Date(finding.date).toLocaleDateString()}
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="flex gap-3 p-3 rounded-lg bg-muted/30 border-l-2 border-muted-foreground">
                         <Quote className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                        <p className="text-sm text-muted-foreground italic">{finding.quote}</p>
+                        <p className="text-sm text-muted-foreground italic">
+                          {finding.quote}
+                          <a href={finding.url} target="_blank" rel="noreferrer" className="ml-2 text-blue-500 hover:underline">(View)</a>
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -281,12 +171,9 @@ export function UserInsights() {
                   <CardTitle>Özet Bulgular</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
-                  <p>• <strong>3 yazılım geliştiricisi</strong> ile derinlemesine röportaj yapıldı</p>
-                  <p>• <strong>Ortalama röportaj süresi:</strong> 45 dakika</p>
-                  <p>• <strong>Tespit edilen ana problem:</strong> Bağlam değiştirme maliyeti ve kesintiler</p>
-                  <p>• <strong>En çok talep edilen özellik:</strong> Otomatik durum bildirimi (%100)</p>
-                  <p>• <strong>İkincil ihtiyaç:</strong> Adaptif mola hatırlatmaları (%80)</p>
-                  <p>• <strong>Verimlilik kaybı:</strong> Günde ortalama 2-3 saat kesintiler nedeniyle kayıp</p>
+                  <p>• <strong>{personas.length} kullanıcı</strong> aktif olarak takip ediliyor</p>
+                  <p>• <strong>Son Aktivite:</strong> {findings[0] ? new Date(findings[0].date).toLocaleString() : '-'}</p>
+                  <p>• Veriler doğrudan <strong>GitHub</strong> entegrasyonu ile sağlanmaktadır.</p>
                 </CardContent>
               </Card>
             </TabsContent>

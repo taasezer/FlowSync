@@ -12,9 +12,13 @@ interface StatisticsProps {
 export function Statistics({ weeklyData, flowDistribution }: StatisticsProps) {
   const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#94a3b8'];
 
-  const totalMinutes = weeklyData.reduce((sum, day) => sum + day.minutes, 0);
-  const avgMinutes = Math.round(totalMinutes / weeklyData.length);
-  const bestDay = weeklyData.reduce((max, day) => day.minutes > max.minutes ? day : max, weeklyData[0]);
+  // Guard against undefined or empty data
+  const safeWeeklyData = weeklyData && weeklyData.length > 0 ? weeklyData : [{ day: 'Veri Yok', minutes: 0 }];
+  const safeFlowDistribution = flowDistribution && flowDistribution.length > 0 ? flowDistribution : [{ name: 'Veri Yok', value: 0 }];
+
+  const totalMinutes = safeWeeklyData.reduce((sum, day) => sum + day.minutes, 0);
+  const avgMinutes = Math.round(totalMinutes / safeWeeklyData.length);
+  const bestDay = safeWeeklyData.reduce((max, day) => day.minutes > max.minutes ? day : max, safeWeeklyData[0]);
 
   return (
     <Card className="col-span-full">

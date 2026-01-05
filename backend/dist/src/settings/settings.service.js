@@ -17,42 +17,23 @@ let SettingsService = class SettingsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(createSettingDto) {
-        if (!createSettingDto.userId) {
-            throw new Error('User ID is required');
-        }
-        const existing = await this.prisma.userSettings.findUnique({
-            where: { userId: createSettingDto.userId }
+    async getSettings(userId) {
+        let settings = await this.prisma.userSettings.findUnique({
+            where: { userId }
         });
-        if (existing) {
-            return this.update(existing.id, createSettingDto);
+        if (!settings) {
+            settings = await this.prisma.userSettings.create({
+                data: { userId }
+            });
         }
-        return this.prisma.userSettings.create({
-            data: {
-                userId: createSettingDto.userId,
-                theme: createSettingDto.theme || 'system',
-                notifications: createSettingDto.notifications ?? true,
-                focusTemplates: createSettingDto.focusTemplates ?? {},
-            },
-        });
+        return settings;
     }
-    findAll() {
-        return this.prisma.userSettings.findMany();
-    }
-    findOne(id) {
-        return this.prisma.userSettings.findUnique({ where: { id } });
-    }
-    async findByUserId(userId) {
-        return this.prisma.userSettings.findUnique({ where: { userId } });
-    }
-    update(id, updateSettingDto) {
+    async updateSettings(userId, data) {
+        const { id, userId: uid, createdAt, updatedAt, ...updateData } = data;
         return this.prisma.userSettings.update({
-            where: { id },
-            data: updateSettingDto,
+            where: { userId },
+            data: updateData
         });
-    }
-    remove(id) {
-        return this.prisma.userSettings.delete({ where: { id } });
     }
 };
 exports.SettingsService = SettingsService;

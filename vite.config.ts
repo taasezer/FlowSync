@@ -19,12 +19,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3005',
         changeOrigin: true,
       },
       '/socket.io': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3005',
         ws: true,
+        changeOrigin: true,
       },
       // Proxy other requests to backend if needed, or primarily use /api prefix
       // For now, let's proxy specifically to avoid conflicts

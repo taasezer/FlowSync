@@ -1,0 +1,235 @@
+
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { GithubService } from '../github/github.service';
+
+@Injectable()
+export class WorkService {
+    constructor(
+        private prisma: PrismaService,
+        private githubService: GithubService
+    ) { }
+
+    async getTeamActivity() {
+        const users = await this.prisma.user.findMany({
+            where: { githubUrl: { not: null } },
+            select: { id: true, name: true, githubUrl: true, role: true }
+        });
+
+        const findings: any[] = [];
+        const personas: any[] = [];
+
+        await Promise.all(users.map(async (user) => {
+            if (!user.githubUrl) return; // Explicit check for TS
+
+            const username = this.githubService.extractUsername(user.githubUrl);
+            if (!username) return;
+
+            const [stats, activity] = await Promise.all([
+                this.githubService.getUserStats(username),
+                this.githubService.getRecentActivity(username)
+            ]);
+
+            if (stats) {
+                personas.push({
+                    name: user.name || username,
+                    role: user.role === 'ADMIN' ? 'Senior Developer' : 'Developer',
+                    experience: '2 yıl',
+                    age: 25,
+                    color: user.role === 'ADMIN' ? 'purple' : 'blue',
+                    avatar: stats.avatarUrl,
+                    bio: `${stats.todayCommits} commits today`,
+                    githubUrl: user.githubUrl,
+                    painPoints: ["Context Switching", "Toplantılar"],
+                    needs: ["Otomatik Durum", "Deep Work"],
+                    goals: ["Temiz Kod", "Verimlilik"],
+                    quote: "Github üzerinde aktif geliştirme yapıyor.",
+                    recentActivity: activity // Include raw activity for frontend graph
+                });
+            }
+
+            if (activity && activity.length > 0) {
+                activity.forEach((commit: any) => {
+                    findings.push({
+                        category: commit.repo,
+                        insight: commit.message,
+                        impact: 'Yüksek',
+                        quote: `Commit by ${user.name || username}`,
+                        date: commit.date,
+                        url: commit.url
+                    });
+                });
+            }
+        }));
+
+        // Sort findings by date desc
+        findings.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        return { personas, findings: findings.slice(0, 20) };
+    }
+
+    async startWork(userId: string) {
+        // Check if already working
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new BadRequestException('User not found');
+        if (user.status === 'WORKING') {
+            throw new BadRequestException('Already working');
+        }
+
+        // Close any open session (e.g. if was on break)
+        await this.closeOpenSession(userId);
+
+        // Create new WORK session
+        await this.prisma.workSession.create({
+            data: {
+                userId,
+                type: 'WORK',
+                startTime: new Date()
+            }
+        });
+
+        // Update user status
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { status: 'WORKING' }
+        });
+
+        return { status: 'WORKING' };
+    }
+
+    async startBreak(userId: string) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new BadRequestException('User not found');
+        if (user.status !== 'WORKING') {
+            throw new BadRequestException('Can only take break when working');
+        }
+
+        await this.closeOpenSession(userId);
+
+        await this.prisma.workSession.create({
+            data: {
+                userId,
+                type: 'BREAK',
+                startTime: new Date()
+            }
+        });
+
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { status: 'BREAK' }
+        });
+
+        return { status: 'BREAK' };
+    }
+
+    async finishWork(userId: string) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new BadRequestException('User not found');
+
+        await this.closeOpenSession(userId);
+
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { status: 'OFFLINE' }
+        });
+
+        return { status: 'OFFLINE' };
+    }
+
+    async getStatus(userId: string) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) return { status: 'OFFLINE' };
+        return { status: user.status };
+    }
+
+    private async closeOpenSession(userId: string) {
+        const lastSession = await this.prisma.workSession.findFirst({
+            where: { userId, endTime: null },
+            orderBy: { startTime: 'desc' }
+        });
+
+        if (lastSession) {
+            await this.prisma.workSession.update({
+                where: { id: lastSession.id },
+                data: { endTime: new Date() }
+            });
+        }
+    }
+
+    async getPerformanceStats(userId?: string) {
+        // 7 days ago
+        const date = new Date();
+        date.setDate(date.getDate() - 7);
+        date.setHours(0, 0, 0, 0);
+
+        const where: any = {
+            startTime: { gte: date },
+            endTime: { not: null }
+        };
+
+        if (userId) {
+            where.userId = userId;
+        }
+
+        const sessions = await this.prisma.workSession.findMany({
+            where,
+            orderBy: { startTime: 'asc' }
+        });
+
+        // Initialize weekly map
+        const weekMap = new Map<string, number>(); // Date string -> minutes
+        const days = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+
+        // Fill last 7 days with 0
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dayName = days[d.getDay()];
+            // We use day name as key for simple UI mapping, assuming standard week view or last 7 days
+            // For now, let's map by actual date to avoid overwriting same day name
+            weekMap.set(dayName, 0);
+        }
+
+        let totalWorkMinutes = 0;
+        let totalBreakMinutes = 0;
+
+        // Process sessions
+        sessions.forEach(s => {
+            const start = new Date(s.startTime);
+            const end = new Date(s.endTime!);
+            const durationMs = end.getTime() - start.getTime();
+            const minutes = Math.floor(durationMs / 1000 / 60);
+
+            const dayName = days[start.getDay()];
+
+            if (s.type === 'WORK') {
+                totalWorkMinutes += minutes;
+                const current = weekMap.get(dayName) || 0;
+                weekMap.set(dayName, current + minutes);
+            } else if (s.type === 'BREAK') {
+                totalBreakMinutes += minutes;
+            }
+        });
+
+        // Format for Recharts
+        // We want the order to be Mon-Sun or simply the last 7 days sorted?
+        // Let's stick to the days array order for consistency if it's a "Weekly" view
+        // Or better, return the last 7 days in chronological order.
+
+        // Simple approach: Map fixed days
+        const weeklyData = days.slice(1).concat(days[0]).map(day => ({ // Mon-Sun order
+            day,
+            minutes: weekMap.get(day) || 0
+        }));
+
+        const flowDistribution = [
+            { name: 'Odaklanma', value: totalWorkMinutes },
+            { name: 'Mola', value: totalBreakMinutes }
+        ];
+
+        return {
+            weeklyData,
+            flowDistribution
+        };
+    }
+}
