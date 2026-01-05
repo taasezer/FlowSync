@@ -7,16 +7,22 @@ import { TrendingUp, Clock, Target, Zap } from 'lucide-react';
 interface StatisticsProps {
   weeklyData: { day: string; minutes: number }[];
   flowDistribution: { name: string; value: number }[];
+  overview?: {
+    totalWorkMinutes: number;
+    avgEfficiency: number;
+    totalFocusMinutes: number;
+    focusCount: number;
+  };
 }
 
-export function Statistics({ weeklyData, flowDistribution }: StatisticsProps) {
+export function Statistics({ weeklyData, flowDistribution, overview }: StatisticsProps) {
   const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#94a3b8'];
 
   // Guard against undefined or empty data
   const safeWeeklyData = weeklyData && weeklyData.length > 0 ? weeklyData : [{ day: 'Veri Yok', minutes: 0 }];
   const safeFlowDistribution = flowDistribution && flowDistribution.length > 0 ? flowDistribution : [{ name: 'Veri Yok', value: 0 }];
 
-  const totalMinutes = safeWeeklyData.reduce((sum, day) => sum + day.minutes, 0);
+  const totalMinutes = overview?.totalWorkMinutes || safeWeeklyData.reduce((sum, day) => sum + day.minutes, 0);
   const avgMinutes = Math.round(totalMinutes / safeWeeklyData.length);
   const bestDay = safeWeeklyData.reduce((max, day) => day.minutes > max.minutes ? day : max, safeWeeklyData[0]);
 
@@ -48,10 +54,12 @@ export function Statistics({ weeklyData, flowDistribution }: StatisticsProps) {
               <div className="p-4 rounded-lg border bg-card">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <TrendingUp className="w-4 h-4" />
-                  Ortalama Günlük
+                  Odak Süresi
                 </div>
-                <div className="font-semibold text-2xl">{Math.floor(avgMinutes / 60)}s {avgMinutes % 60}dk</div>
-                <div className="text-xs text-muted-foreground mt-1">Günlük ortalama</div>
+                <div className="font-semibold text-2xl">
+                  {overview ? `${Math.floor(overview.totalFocusMinutes / 60)}s ${overview.totalFocusMinutes % 60}dk` : `0s 0dk`}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">{overview?.focusCount || 0} odak seansı</div>
               </div>
 
               <div className="p-4 rounded-lg border bg-card">
@@ -68,8 +76,8 @@ export function Statistics({ weeklyData, flowDistribution }: StatisticsProps) {
                   <Zap className="w-4 h-4" />
                   Verimlilik
                 </div>
-                <div className="font-semibold text-2xl">%87</div>
-                <div className="text-xs text-muted-foreground mt-1">Geçen haftaya göre +5%</div>
+                <div className="font-semibold text-2xl">%{overview?.avgEfficiency || 0}</div>
+                <div className="text-xs text-muted-foreground mt-1">Performans Skoru</div>
               </div>
             </div>
           </TabsContent>

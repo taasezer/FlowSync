@@ -68,6 +68,7 @@ export class WorkService {
         return { personas, findings: findings.slice(0, 20) };
     }
 
+
     async startWork(userId: string) {
         // Check if already working
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
@@ -76,15 +77,30 @@ export class WorkService {
             throw new BadRequestException('Already working');
         }
 
-        // Close any open session (e.g. if was on break)
+        // Close any open session
         await this.closeOpenSession(userId);
 
-        // Create new WORK session
+        // Fetch User Settings to determine Focus Mode
+        const settings = await this.prisma.userSettings.findUnique({ where: { userId } });
+
+        // Determine Focus Mode status
+        // If social block or notifications block is on, OR intensity > 50, consider it a Focus Session
+        const isFocusMode = settings ? (
+            settings.focusBlockSocial ||
+            settings.focusBlockNotify ||
+            (settings.focusIntensity > 50)
+        ) : false;
+
+        const focusIntensity = settings ? settings.focusIntensity : 0;
+
+        // Create new WORK session with settings data
         await this.prisma.workSession.create({
             data: {
                 userId,
                 type: 'WORK',
-                startTime: new Date()
+                startTime: new Date(),
+                isFocusMode,
+                focusIntensity
             }
         });
 
@@ -149,9 +165,38 @@ export class WorkService {
         });
 
         if (lastSession) {
+            const endTime = new Date();
+            const durationMinutes = (endTime.getTime() - lastSession.startTime.getTime()) / 1000 / 60;
+
+            // Calculate Efficiency Score
+            // Base score: 100%
+            // Bonus: +10% if Focus Mode
+            // Bonus: +Dependency on Intensity (max +20%)
+            // Penalty: -10% if duration < 10 mins (too short)
+
+            let efficiencyScore = 80; // Start baseline
+
+            if (lastSession.type === 'WORK') {
+                if (lastSession.isFocusMode) efficiencyScore += 10;
+                if (lastSession.focusIntensity > 0) {
+                    efficiencyScore += (lastSession.focusIntensity / 10); // +0 to 10
+                }
+                if (durationMinutes > 25) efficiencyScore += 5; // Pomodoro bonus
+                if (durationMinutes < 10) efficiencyScore -= 20; // Too short penalty
+
+                // Cap at 100
+                efficiencyScore = Math.min(100, Math.max(0, Math.round(efficiencyScore)));
+            } else {
+                // Break session - efficiency irrelevant or handled differently
+                efficiencyScore = 100;
+            }
+
             await this.prisma.workSession.update({
                 where: { id: lastSession.id },
-                data: { endTime: new Date() }
+                data: {
+                    endTime,
+                    efficiencyScore
+                }
             });
         }
     }
@@ -227,9 +272,29 @@ export class WorkService {
             { name: 'Mola', value: totalBreakMinutes }
         ];
 
+        // Calculate holistic metrics
+        const totalMinutesTarget = 7 * 8 * 60; // 7 days * 8 hours
+        const workSessions = sessions.filter(s => s.type === 'WORK');
+
+        const totalEfficiencyScore = workSessions.reduce((sum, s) => sum + (s.efficiencyScore || 0), 0);
+        const avgEfficiency = workSessions.length > 0 ? Math.round(totalEfficiencyScore / workSessions.length) : 0;
+
+        const focusSessions = workSessions.filter(s => s.isFocusMode);
+        const totalFocusMinutes = focusSessions.reduce((sum, s) => {
+            const start = new Date(s.startTime);
+            const end = new Date(s.endTime || new Date());
+            return sum + Math.floor((end.getTime() - start.getTime()) / 1000 / 60);
+        }, 0);
+
         return {
             weeklyData,
-            flowDistribution
+            flowDistribution,
+            overview: {
+                totalWorkMinutes,
+                avgEfficiency,
+                totalFocusMinutes,
+                focusCount: focusSessions.length
+            }
         };
     }
 }

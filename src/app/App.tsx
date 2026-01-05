@@ -149,7 +149,11 @@ function MainApp() {
 
           <TabsContent value="statistics" className="space-y-6">
             <div className="text-center space-y-2 py-6"><h2 className="text-3xl font-bold">Performans Analizi</h2></div>
-            <Statistics weeklyData={weeklyData} flowDistribution={flowDistribution} />
+            <Statistics
+              weeklyData={weeklyData}
+              flowDistribution={flowDistribution}
+              overview={statsData?.overview}
+            />
           </TabsContent>
 
           <TabsContent value="insights" className="space-y-6">
