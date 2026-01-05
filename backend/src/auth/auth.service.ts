@@ -36,8 +36,9 @@ export class AuthService {
         const hashedPassword = await bcrypt.hash(data.password, 10);
         const user = await this.prisma.user.create({
             data: {
-                ...data,
+                ...data, // Keep other fields like name, email
                 password: hashedPassword,
+                role: 'USER', // Force role to USER, overriding any input
                 settings: {
                     create: {} // Create default settings
                 }
