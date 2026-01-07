@@ -8,25 +8,14 @@ export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) { }
 
   async create(createAnalyticsDto: CreateAnalyticsDto) {
-    // Ensure user exists or create a temp one if not provided (logic can be refined)
-    // For now, we assume userId is provided or we create a default user if needed
+    if (!createAnalyticsDto.userId) {
+      throw new Error('User ID is required');
+    }
 
-    // Check if user exists, if not create a default one for "guest" mode or throw
-    // This part depends on if we have auth. Let's assume we ensure a user exists.
-
-    let user = await this.prisma.user.findUnique({ where: { id: createAnalyticsDto.userId } });
+    // Check if user exists
+    const user = await this.prisma.user.findUnique({ where: { id: createAnalyticsDto.userId } });
     if (!user) {
-      // Create a default user if valid UUID or handle error. 
-      // For simplicity in this phase, we might auto-create if ID is not found but valid?
-      // Actually, let's just create the session and let Prisma throw if FK fails, or better:
-      // upsert user if we want lazy user creation.
-
-      // BETTER: Create session connecting to user.
-      // If userId is missing, maybe create a temporary user?
-
-      if (!createAnalyticsDto.userId) {
-        throw new Error('User ID is required');
-      }
+      throw new Error('User not found');
     }
 
     return this.prisma.activitySession.create({
@@ -54,10 +43,17 @@ export class AnalyticsService {
   }
 
   update(id: string, updateAnalyticsDto: UpdateAnalyticsDto) {
-    return `This action updates a #${id} analytics`;
+    return this.prisma.activitySession.update({
+      where: { id },
+      data: {
+        endTime: updateAnalyticsDto.endTime ? new Date(updateAnalyticsDto.endTime) : undefined,
+        duration: updateAnalyticsDto.duration,
+        activityScore: updateAnalyticsDto.activityScore,
+      },
+    });
   }
 
   remove(id: string) {
-    return `This action removes a #${id} analytics`;
+    return this.prisma.activitySession.delete({ where: { id } });
   }
 }

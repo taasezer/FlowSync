@@ -3,7 +3,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 
 @Injectable()
-@Injectable()
 export class GithubService {
     private readonly logger = new Logger(GithubService.name);
     private cache = new Map<string, { data: any, timestamp: number }>();

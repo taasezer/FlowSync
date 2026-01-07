@@ -40,6 +40,20 @@ export declare class AnalyticsController {
         activityScore: number | null;
         userId: string;
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs>;
-    update(id: string, updateAnalyticsDto: UpdateAnalyticsDto): string;
-    remove(id: string): string;
+    update(id: string, updateAnalyticsDto: UpdateAnalyticsDto): import(".prisma/client").Prisma.Prisma__ActivitySessionClient<{
+        id: string;
+        startTime: Date;
+        endTime: Date | null;
+        duration: number | null;
+        activityScore: number | null;
+        userId: string;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    remove(id: string): import(".prisma/client").Prisma.Prisma__ActivitySessionClient<{
+        id: string;
+        startTime: Date;
+        endTime: Date | null;
+        duration: number | null;
+        activityScore: number | null;
+        userId: string;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
 }

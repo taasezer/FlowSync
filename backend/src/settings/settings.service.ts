@@ -25,9 +25,11 @@ export class SettingsService {
         // For now, allow direct update of boolean/int fields
         const { id, userId: uid, createdAt, updatedAt, ...updateData } = data;
 
-        return this.prisma.userSettings.update({
+        // Use upsert to handle case where settings don't exist
+        return this.prisma.userSettings.upsert({
             where: { userId },
-            data: updateData
+            update: updateData,
+            create: { userId, ...updateData }
         });
     }
 }

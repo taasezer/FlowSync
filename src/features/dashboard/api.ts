@@ -22,8 +22,8 @@ export const useActivityData = () => {
             if (!sessions || sessions.length === 0) return [];
 
             return sessions.slice(-5).map((s: any) => ({
-                time: new Date(s.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                activity: s.activityLevel
+                time: new Date(s.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                activity: s.activityScore || 0
             }));
         }
     });

@@ -18,11 +18,12 @@ let AnalyticsService = class AnalyticsService {
         this.prisma = prisma;
     }
     async create(createAnalyticsDto) {
-        let user = await this.prisma.user.findUnique({ where: { id: createAnalyticsDto.userId } });
+        if (!createAnalyticsDto.userId) {
+            throw new Error('User ID is required');
+        }
+        const user = await this.prisma.user.findUnique({ where: { id: createAnalyticsDto.userId } });
         if (!user) {
-            if (!createAnalyticsDto.userId) {
-                throw new Error('User ID is required');
-            }
+            throw new Error('User not found');
         }
         return this.prisma.activitySession.create({
             data: {
@@ -46,10 +47,17 @@ let AnalyticsService = class AnalyticsService {
         });
     }
     update(id, updateAnalyticsDto) {
-        return `This action updates a #${id} analytics`;
+        return this.prisma.activitySession.update({
+            where: { id },
+            data: {
+                endTime: updateAnalyticsDto.endTime ? new Date(updateAnalyticsDto.endTime) : undefined,
+                duration: updateAnalyticsDto.duration,
+                activityScore: updateAnalyticsDto.activityScore,
+            },
+        });
     }
     remove(id) {
-        return `This action removes a #${id} analytics`;
+        return this.prisma.activitySession.delete({ where: { id } });
     }
 };
 exports.AnalyticsService = AnalyticsService;

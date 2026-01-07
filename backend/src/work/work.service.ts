@@ -221,18 +221,17 @@ export class WorkService {
             orderBy: { startTime: 'asc' }
         });
 
-        // Initialize weekly map
-        const weekMap = new Map<string, number>(); // Date string -> minutes
+        // Initialize weekly map with date-based keys
+        const weekMap = new Map<string, { dayName: string, minutes: number }>(); // Date string -> {dayName, minutes}
         const days = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
 
-        // Fill last 7 days with 0
-        for (let i = 0; i < 7; i++) {
+        // Fill last 7 days with 0 using date strings as keys
+        for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
+            const dateKey = d.toISOString().split('T')[0]; // YYYY-MM-DD format
             const dayName = days[d.getDay()];
-            // We use day name as key for simple UI mapping, assuming standard week view or last 7 days
-            // For now, let's map by actual date to avoid overwriting same day name
-            weekMap.set(dayName, 0);
+            weekMap.set(dateKey, { dayName, minutes: 0 });
         }
 
         let totalWorkMinutes = 0;
@@ -245,26 +244,23 @@ export class WorkService {
             const durationMs = end.getTime() - start.getTime();
             const minutes = Math.floor(durationMs / 1000 / 60);
 
-            const dayName = days[start.getDay()];
+            const dateKey = start.toISOString().split('T')[0];
 
             if (s.type === 'WORK') {
                 totalWorkMinutes += minutes;
-                const current = weekMap.get(dayName) || 0;
-                weekMap.set(dayName, current + minutes);
+                const existing = weekMap.get(dateKey);
+                if (existing) {
+                    weekMap.set(dateKey, { ...existing, minutes: existing.minutes + minutes });
+                }
             } else if (s.type === 'BREAK') {
                 totalBreakMinutes += minutes;
             }
         });
 
-        // Format for Recharts
-        // We want the order to be Mon-Sun or simply the last 7 days sorted?
-        // Let's stick to the days array order for consistency if it's a "Weekly" view
-        // Or better, return the last 7 days in chronological order.
-
-        // Simple approach: Map fixed days
-        const weeklyData = days.slice(1).concat(days[0]).map(day => ({ // Mon-Sun order
-            day,
-            minutes: weekMap.get(day) || 0
+        // Format for Recharts - chronological order
+        const weeklyData = Array.from(weekMap.values()).map(entry => ({
+            day: entry.dayName,
+            minutes: entry.minutes
         }));
 
         const flowDistribution = [

@@ -45,6 +45,20 @@ export declare class AnalyticsGateway implements OnGatewayConnection, OnGatewayD
         activityScore: number | null;
         userId: string;
     } | null, null, import("@prisma/client/runtime/library").DefaultArgs>;
-    update(updateAnalyticsDto: UpdateAnalyticsDto): string;
-    remove(id: string): string;
+    update(updateAnalyticsDto: UpdateAnalyticsDto): import(".prisma/client").Prisma.Prisma__ActivitySessionClient<{
+        id: string;
+        startTime: Date;
+        endTime: Date | null;
+        duration: number | null;
+        activityScore: number | null;
+        userId: string;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    remove(id: string): import(".prisma/client").Prisma.Prisma__ActivitySessionClient<{
+        id: string;
+        startTime: Date;
+        endTime: Date | null;
+        duration: number | null;
+        activityScore: number | null;
+        userId: string;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
 }

@@ -30,9 +30,10 @@ let SettingsService = class SettingsService {
     }
     async updateSettings(userId, data) {
         const { id, userId: uid, createdAt, updatedAt, ...updateData } = data;
-        return this.prisma.userSettings.update({
+        return this.prisma.userSettings.upsert({
             where: { userId },
-            data: updateData
+            update: updateData,
+            create: { userId, ...updateData }
         });
     }
 };
