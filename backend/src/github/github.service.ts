@@ -45,7 +45,7 @@ export class GithubService {
             ]);
 
             const profile = profileRes.data;
-            const events = eventsRes.data;
+            const events = Array.isArray(eventsRes.data) ? eventsRes.data : [];
 
             // Calculate today's commits
             const today = new Date().toDateString();
@@ -86,12 +86,12 @@ export class GithubService {
 
         try {
             const eventsRes = await axios.get(`https://api.github.com/users/${username}/events/public`, { headers: this.getHeaders() });
-            const events = eventsRes.data;
+            const events = Array.isArray(eventsRes.data) ? eventsRes.data : [];
 
             // Filter push events and extract commits
             const pushEvents = events.filter((e: any) => e.type === 'PushEvent');
             const commits = pushEvents.flatMap((e: any) =>
-                e.payload.commits.map((c: any) => ({
+                (e.payload.commits || []).map((c: any) => ({
                     message: c.message,
                     repo: e.repo.name,
                     date: e.created_at,
