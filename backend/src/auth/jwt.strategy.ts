@@ -2,10 +2,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import 'dotenv/config';
 
-// In a real app, use environment variables!
 export const jwtConstants = {
-    secret: 'secretKey',
+    secret: process.env.JWT_SECRET || (() => {
+        throw new Error('JWT_SECRET environment variable is required!');
+    })(),
 };
 
 @Injectable()

@@ -11,13 +11,22 @@ import { AnalyticsService } from './analytics.service';
 import { CreateAnalyticsDto } from './dto/create-analytics.dto';
 import { UpdateAnalyticsDto } from './dto/update-analytics.dto';
 import { Server, Socket } from 'socket.io';
+import { LoggerService } from '../common/logger.service';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({
+  cors: {
+    origin: 'http://localhost:5173',
+    credentials: true
+  }
+})
 export class AnalyticsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly analyticsService: AnalyticsService) {
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly logger: LoggerService,
+  ) {
     // Simulate activity updates for now
     setInterval(() => {
       const mockLevel = Math.floor(Math.random() * 30) + 60; // 60-90
@@ -26,11 +35,11 @@ export class AnalyticsGateway implements OnGatewayConnection, OnGatewayDisconnec
   }
 
   handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+    this.logger.debug(`Client connected: ${client.id}`, 'AnalyticsGateway');
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
+    this.logger.debug(`Client disconnected: ${client.id}`, 'AnalyticsGateway');
   }
 
   @SubscribeMessage('createAnalytics')

@@ -3,10 +3,12 @@ import { AnalyticsService } from './analytics.service';
 import { CreateAnalyticsDto } from './dto/create-analytics.dto';
 import { UpdateAnalyticsDto } from './dto/update-analytics.dto';
 import { Server, Socket } from 'socket.io';
+import { LoggerService } from '../common/logger.service';
 export declare class AnalyticsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly analyticsService;
+    private readonly logger;
     server: Server;
-    constructor(analyticsService: AnalyticsService);
+    constructor(analyticsService: AnalyticsService, logger: LoggerService);
     handleConnection(client: Socket): void;
     handleDisconnect(client: Socket): void;
     create(createAnalyticsDto: CreateAnalyticsDto): Promise<{

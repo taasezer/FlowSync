@@ -35,7 +35,12 @@ export class GithubService {
     async getUserStats(username: string) {
         const cacheKey = `stats_${username}`;
         const cached = this.getFromCache(cacheKey);
-        if (cached) return cached;
+        if (cached) {
+            this.logger.log(`Cache hit for ${username}`);
+            return cached;
+        }
+
+        this.logger.log(`Fetching GitHub data for: ${username}`);
 
         try {
             const [profileRes, eventsRes] = await Promise.all([
@@ -46,11 +51,15 @@ export class GithubService {
             const profile = profileRes.data;
             const events = Array.isArray(eventsRes.data) ? eventsRes.data : [];
 
+            this.logger.log(`Got ${events.length} events for ${username}`);
+
             // Calculate today's commits
             const today = new Date().toDateString();
             const todayCommits = events
                 .filter((e: any) => e.type === 'PushEvent' && new Date(e.created_at).toDateString() === today)
                 .reduce((acc: number, e: any) => acc + e.payload.size, 0);
+
+            this.logger.log(`Today's commits for ${username}: ${todayCommits}`);
 
             const stats = {
                 username: profile.login,
@@ -62,7 +71,7 @@ export class GithubService {
 
             this.setCache(cacheKey, stats);
             return stats;
-        } catch (error) {
+        } catch (error: any) {
             this.logger.error(`Failed to fetch GitHub data for ${username}: ${error.message}`);
             return null;
         }

@@ -38,7 +38,7 @@ export class WorkService {
                     age: 25,
                     color: user.role === 'ADMIN' ? 'purple' : 'blue',
                     avatar: stats.avatarUrl,
-                    bio: `${stats.todayCommits} commits today`,
+                    bio: `${stats.todayCommits || 0} commits today`,
                     githubUrl: user.githubUrl,
                     painPoints: ["Context Switching", "Toplantılar"],
                     needs: ["Otomatik Durum", "Deep Work"],

@@ -1,12 +1,18 @@
 
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import 'dotenv/config';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    const email = 'taha.sezer@istun.edu.tr';
-    const password = 'Aett5734'; // Restoring original password as requested
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+
+    if (!email || !password) {
+        throw new Error('ADMIN_EMAIL ve ADMIN_PASSWORD environment variable\'ları tanımlanmalıdır!');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Upsert user

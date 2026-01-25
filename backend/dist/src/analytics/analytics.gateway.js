@@ -18,21 +18,24 @@ const analytics_service_1 = require("./analytics.service");
 const create_analytics_dto_1 = require("./dto/create-analytics.dto");
 const update_analytics_dto_1 = require("./dto/update-analytics.dto");
 const socket_io_1 = require("socket.io");
+const logger_service_1 = require("../common/logger.service");
 let AnalyticsGateway = class AnalyticsGateway {
     analyticsService;
+    logger;
     server;
-    constructor(analyticsService) {
+    constructor(analyticsService, logger) {
         this.analyticsService = analyticsService;
+        this.logger = logger;
         setInterval(() => {
             const mockLevel = Math.floor(Math.random() * 30) + 60;
             this.server.emit('activity_level', mockLevel);
         }, 5000);
     }
     handleConnection(client) {
-        console.log(`Client connected: ${client.id}`);
+        this.logger.debug(`Client connected: ${client.id}`, 'AnalyticsGateway');
     }
     handleDisconnect(client) {
-        console.log(`Client disconnected: ${client.id}`);
+        this.logger.debug(`Client disconnected: ${client.id}`, 'AnalyticsGateway');
     }
     create(createAnalyticsDto) {
         return this.analyticsService.create(createAnalyticsDto);
@@ -90,7 +93,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AnalyticsGateway.prototype, "remove", null);
 exports.AnalyticsGateway = AnalyticsGateway = __decorate([
-    (0, websockets_1.WebSocketGateway)({ cors: true }),
-    __metadata("design:paramtypes", [analytics_service_1.AnalyticsService])
+    (0, websockets_1.WebSocketGateway)({
+        cors: {
+            origin: 'http://localhost:5173',
+            credentials: true
+        }
+    }),
+    __metadata("design:paramtypes", [analytics_service_1.AnalyticsService,
+        logger_service_1.LoggerService])
 ], AnalyticsGateway);
 //# sourceMappingURL=analytics.gateway.js.map
